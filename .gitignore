@@ -1,0 +1,30 @@
+# OSX
+.DS_Store
+
+# editor
+.vscode/
+
+node_modules/
+
+
+# webpack bundles
+dist/
+build/
+
+# unignore the favicon
+!/build/favicon.ico
+
+
+# logs
+*.log
+**.lock
+package-lock.json
+
+# linters
+.eslintrc.json
+.sass-lint.yml
+
+# aux files 
+src/textures/**.xml
+
+
