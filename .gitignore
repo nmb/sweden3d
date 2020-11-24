@@ -2,7 +2,7 @@
 .DS_Store
 
 # editor
-.vscode/
+**.swp
 
 node_modules/
 
