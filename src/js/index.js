@@ -178,7 +178,7 @@ class Application {
       bgeometry.computeBoundingSphere();
       bgeometry.computeVertexNormals();
       const map_mesh = new THREE.Mesh(bgeometry, material);
-      map_mesh.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
+      map_mesh.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1));
       map_mesh.position.y = 0;
       map_mesh.rotation.x = Math.PI / 2;
 
@@ -217,5 +217,4 @@ class Application {
   const app = new Application({
     container: document.getElementById("canvas-container")
   });
-  console.log(app);
 })();
