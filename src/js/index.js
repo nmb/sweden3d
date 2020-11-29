@@ -52,6 +52,10 @@ class Application {
 
   render() {
     this.controls.update();
+    //this.pl.position.set(this.pl.position.add(new THREE.Vector3(Math.random(), Math.random(),0.0)));
+    this.pl.forEach((pl, index) => {
+      pl.position.add(new THREE.Vector3(3*(Math.random()-0.5), 3*(Math.random()-0.5), 0.0));
+    });
     this.renderer.render(this.scene, this.camera);
     // when render is invoked via requestAnimationFrame(this.render) there is
     // no 'this', so either we bind it explicitly or use an es6 arrow function.
@@ -85,7 +89,8 @@ class Application {
     const near = 0.1;
     const far = 10000;
     this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    this.camera.position.set(1, 500, -500);
+    //this.camera.position.set(1, 500, -500);
+    this.camera.position.set(100, -400, -500);
     this.camera.lookAt(this.scene.position);
   }
 
@@ -98,9 +103,16 @@ class Application {
   }
 
   setupLight() {
+    this.ambientLight = new THREE.AmbientLight( 0x404040 ); // soft white light
+    this.scene.add( this.ambientLight );
     this.light = new THREE.DirectionalLight(0xffffff);
-    this.light.position.set(500, 1000, 250);
+    //this.light.position.set(500, 1000, 250);
+    this.light.position.set(-5000, 1000, -1000);
     this.scene.add(this.light);
+    this.pl = [];
+    for(let i = 0; i<20; i++) {
+    this.pl.push(new THREE.PointLight( 0xff0000, 1, 100, 0.5 ));
+    }
   }
 
   setupTerrainModel() {
@@ -180,10 +192,19 @@ class Application {
       const map_mesh = new THREE.Mesh(bgeometry, material);
       map_mesh.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1));
       map_mesh.position.y = 0;
-      map_mesh.rotation.x = Math.PI / 2;
+      //map_mesh.rotation.x = Math.PI / 2;
 
       this.scene.add(map_mesh);
 
+      console.log(positions.length);
+      this.pl.forEach((pl, index) => {
+        let ix = -1;
+        while(ix<0 && positions[ix+2] > -0.25){
+        ix = Math.floor(Math.random()*positions.length/3)*3
+        pl.position.set(positions[ix],positions[ix+1], positions[ix+2]-20);
+        }
+      this.scene.add(pl);
+      });
       const loader = document.getElementById("loader");
       loader.style.opacity = "-1";
 
