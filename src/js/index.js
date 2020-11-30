@@ -53,10 +53,12 @@ class Application {
   render() {
     this.controls.update();
     //this.pl.position.set(this.pl.position.add(new THREE.Vector3(Math.random(), Math.random(),0.0)));
-    this.pl.forEach((pl, index) => {
-      pl.position.add(new THREE.Vector3(3*(Math.random()-0.5), 3*(Math.random()-0.5), 0.0));
-    });
     this.renderer.render(this.scene, this.camera);
+    // calculate and set position of moving light
+    let t = (Math.sin((Date.now() / 4096))+1)/2;
+    let p = new THREE.Vector2()
+    this.lightLine.getPoint(t, p);
+    this.pl.position.set(p.x, p.y, -20)
     // when render is invoked via requestAnimationFrame(this.render) there is
     // no 'this', so either we bind it explicitly or use an es6 arrow function.
     // requestAnimationFrame(this.render.bind(this));
@@ -106,13 +108,17 @@ class Application {
     this.ambientLight = new THREE.AmbientLight( 0x404040 ); // soft white light
     this.scene.add( this.ambientLight );
     this.light = new THREE.DirectionalLight(0xffffff);
-    //this.light.position.set(500, 1000, 250);
     this.light.position.set(-5000, 1000, -1000);
     this.scene.add(this.light);
-    this.pl = [];
-    for(let i = 0; i<20; i++) {
-    this.pl.push(new THREE.PointLight( 0xff0000, 1, 100, 0.5 ));
-    }
+    // set up path for moving pointlight
+    const points = [];
+    points.push( new THREE.Vector2( 90, -370 ) );
+    points.push( new THREE.Vector2( 110, -200 ) );
+    points.push( new THREE.Vector2( 30, 90 ) );
+    points.push( new THREE.Vector2( -80, 350, -10 ) );
+    this.lightLine = new THREE.SplineCurve(points);
+    this.pl = new THREE.PointLight( 0xff0000, 2, 0, 0.1 );
+    this.scene.add(this.pl);
   }
 
   setupTerrainModel() {
@@ -192,19 +198,9 @@ class Application {
       const map_mesh = new THREE.Mesh(bgeometry, material);
       map_mesh.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1));
       map_mesh.position.y = 0;
-      //map_mesh.rotation.x = Math.PI / 2;
 
       this.scene.add(map_mesh);
 
-      console.log(positions.length);
-      this.pl.forEach((pl, index) => {
-        let ix = -1;
-        while(ix<0 && positions[ix+2] > -0.25){
-        ix = Math.floor(Math.random()*positions.length/3)*3
-        pl.position.set(positions[ix],positions[ix+1], positions[ix+2]-20);
-        }
-      this.scene.add(pl);
-      });
       const loader = document.getElementById("loader");
       loader.style.opacity = "-1";
 
@@ -230,6 +226,16 @@ class Application {
     //console.log("The X axis is red. The Y axis is green. The Z axis is blue.");
     const axesHelper = new THREE.AxesHelper(500);
     this.scene.add(axesHelper);
+
+    const material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+    const points = [];
+    points.push( new THREE.Vector3( 90, -370, -10 ) );
+    points.push( new THREE.Vector3( 110, -200, -10 ) );
+    points.push( new THREE.Vector3( 30, 90, -10 ) );
+    points.push( new THREE.Vector3( -80, 350, -10 ) );
+    const geometry = new THREE.BufferGeometry().setFromPoints( points );
+    const line = new THREE.Line( geometry, material );
+    this.scene.add(line);
   }
 }
 
